@@ -2,18 +2,19 @@ import pandas as pd
 import glob
 import tkinter as tk
 
-def prismReport():
+def prismReport(): 
+    """load the prism report from the folder specified, must be a xlsx file"""
     folder_path = "./xlsx/"
     xlsx_files = glob.glob(folder_path + "*.xlsx")
 
-    for xlsx_file in xlsx_files: #loop through all the files (WIP)
+    for xlsx_file in xlsx_files: #loop through all the files
         cleanfile(xlsx_file)
 
 def cleanfile(xlsx_file):
+    """clean the file"""
     df = pd.read_excel(xlsx_file) #load the file
     df.drop(index=range(5), inplace=True) #remove the first 5 rows
     df = df.rename(columns=df.iloc[0]).drop(df.index[0])
-
 
     split_string = lambda x: '/'.join(x.split('/')[2:]) if x and isinstance(x, str) and len(x.split('/')) >= 2 else x #clean up the string
     df['ContainerName'] = df['ContainerName'].apply(split_string)#split the string
@@ -34,7 +35,6 @@ def cleanfile(xlsx_file):
     new_df = pd.concat([first_col, last_col, middle_cols], axis=1)
     print(new_df)
 
-
     writer = pd.ExcelWriter(xlsx_file, engine='xlsxwriter') #create a writer object
     new_df.to_excel(writer, sheet_name="oli", index=False) #create the excel
                     
@@ -47,12 +47,11 @@ def cleanfile(xlsx_file):
     writer.save()
 
 def main():
+    """create the GUI"""
     window = tk.Tk()
     window.title("Ramiel")
     window_width = 420
     window_height = 420
-
-    
 
     canvas = tk.Canvas(window, width=window_width, height=window_height)
     canvas.pack()
@@ -60,12 +59,10 @@ def main():
     text = "( ͡° ͜ʖ ͡°)"
     text_color = "black"
     text_size = 30
+
     canvas.create_text(window_width/2, window_height/4, text=text, fill=text_color, font=("Arial", text_size), anchor=tk.CENTER)
-
-
     button = tk.Button(window, text="Limpiar reporte",font=("Arial", text_size), command=prismReport)
     button.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
-
 
     window.mainloop()
 
